@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage[landscape,margin=0px,top=1cm]{geometry}\usepackage{tikz}
+\usepackage{environ}
+\usepackage{LinkedList}
+\usetikzlibrary{arrows}
+\usetikzlibrary{automata}
+\NewEnviron{automaton}{
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,thick,initial text={},double=]
+    \BODY
+    \end{tikzpicture}
+}
+
+\begin{document}
+\begin{center}
+    \begin{automaton}
+        \node[state,initial] (q_0) {$q_0$};
+        \node[state,accepting] (q_1) [right=of q_0] {$q_1$};
+\path[every node/.style={font=\sffamily\small}]
+        (q_0) edge [bend left] node {a} (q_1) edge [loop above] node {s,d,f,g} ()
+        (q_1) edge [loop above] node {a} () edge [bend left] node {s,d,f,g} (q_0)
+;
+    \end{automaton}
+\end{center}
+\end{document}
