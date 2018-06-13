@@ -2,43 +2,61 @@
 #define _DFA_H_
 
 #define DOT '.'
-extern int DFA_INVALID;
 
-typedef struct {
-    int accepting;
-    int buf_size;
-    int *transitions;
-} DFA_State;
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+using std::string;
+using std::vector;
+using std::map;
+using std::set;
 
-typedef struct {
-    int start;          // initial state
-    int active;         // active state
-    int num_states;     // total number of states
-    int buf_size;       // size of allocated states array
-    int alphabet_size;
-    char *alphabet;
-    DFA_State *states;  // array of states
-} DFA;
+class State {
+public:
+    map<string,int> transitions;
+    bool accepting;
 
-/* create an empty DFA */
-DFA *DFA_create(int alph_size, char *alph);
-/* creates a copy of an DFA */
-DFA *DFA_copy(DFA *a);
-/* destroy an DFA (free memory) */
-void DFA_destroy(DFA *d);
-/* reset n for reading a new string */
-void DFA_reset(DFA *d);
-/* adds state, returns index */
-int DFA_addState(DFA *d, int accept);
-/* adds a transition */
-void DFA_updateTransition(DFA *d, int start, char symbol, int dest);
-/* reads a character and updates the DFA */
-void DFA_read(DFA *d, char symbol);
-void DFA_readStr(DFA *d, const char *str);
-/* determines whether n is in an accepting state */
-int DFA_accept(DFA *d);
-/* prints the DFA */
-void DFA_print(DFA *d);
-int DFA_valid();
+    State() {}
+    State(bool a): accepting(a) {}
+    State(const State &o): transitions(o.transitions),
+                           accepting(o.accepting) {}
+    ~State() {}
+};
+
+class DFA {
+public:
+    int start;
+    int active;
+    set<string> alphabet;
+    vector<State> states;
+
+    DFA(set<string> a, int s): start(0),
+                               active(0),
+                               alphabet(a),
+                               states(s) {}
+    DFA(const DFA &o): start(o.start),
+                       active(o.active),
+                       alphabet(o.alphabet),
+                       states(o.states) {}
+    ~DFA() {}
+
+    /* swaps final states */
+    void complement();
+    /* define the start state */
+    void set_start(int);
+    /* choose whether a state is accepting */
+    void set_accept(int, bool);
+    /* reset for reading a new string */
+    void reset();
+    /* adds a new (accepting?) state and returns its index */
+    int add_state(bool);
+    /* x --str--> y */
+    void updateTransition(int, string, int);
+    /* reads character or string */
+    void read(string);
+    bool accept();
+    string print();
+};
 
 #endif

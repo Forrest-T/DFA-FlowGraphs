@@ -1,17 +1,19 @@
-CMP = gcc
-FLAGS = -g -Wall -Wextra -lm
+CMP = g++
+FLAGS = -g --std=c++11 -Wall -Wextra -lm
 
 .PHONY: clean all
 
-all: test_DFA
+all: run test_DFA
 
-%.o: %.c
+%.o: %.cpp %.h
 	$(CMP) $(FLAGS) -c -o $@ $<
 
-DFA.c: DFA.h
-DFA_print.c: DFA_print.h
+DFA.cpp: DFA.h
+parse.cpp: parse.h
 
-test_DFA: DFA_test.o DFA.o DFA_print.o
+run: main.cpp parse.o DFA.o FG.o CFG.o
+	$(CMP) $(FLAGS) -o $@ $^
+test_DFA: DFA_test.o DFA.o
 	$(CMP) $(FLAGS) -o $@ $^
 clean:
-	rm -rf *.o test_DFA
+	rm -rf *.o test_DFA run
